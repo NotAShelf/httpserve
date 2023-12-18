@@ -42,12 +42,30 @@ var (
 	address     = flag.String("a", "0.0.0.0", "Address (default: 0.0.0.0)")
 	fileName    = flag.String("f", "", "Set filename header")
 	contentType = flag.String("c", "application/octet-stream", "Set content-type header (default: application/octet-stream)")
+	username    = flag.String("user", "", "Username for basic authentication")
+	password    = flag.String("password", "", "Password for basic authentication")
 )
+
+func basicAuth(handler http.Handler, username, password string) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if username != "" || password != "" {
+			user, pass, ok := r.BasicAuth()
+			if !ok || user != username || pass != password {
+				w.Header().Set("WWW-Authenticate", `Basic realm="Please enter your credentials"`)
+				w.WriteHeader(http.StatusUnauthorized)
+				w.Write([]byte("Unauthorized access"))
+				return
+			}
+		}
+		handler.ServeHTTP(w, r)
+	})
+}
 
 func main() {
 	flag.Parse()
 
-	http.Handle("/", &requestHandler{})
+	authHandler := basicAuth(&requestHandler{}, *username, *password)
+	http.Handle("/", authHandler)
 
 	addr := fmt.Sprintf("%s:%d", *address, *port)
 	log.Printf("Server starting on %s\n", addr)

@@ -15,8 +15,8 @@ httpserve -p <PORT> -a <ADDRESS> -f <FILENAME> -c <CONTENT_TYPE>
 - `-a <ADDRESS>`: Set the address for the server (default: 0.0.0.0)
 - `-f <FILENAME>`: Set the filename header for downloaded content
 - `-c <CONTENT_TYPE>`: Set the content-type header (default: application/octet-stream)
-
-> Replace `<PORT>`, `<ADDRESS>`, `<FILENAME>`, and `<CONTENT_TYPE>` with your preferred values.
+- `-user <USERNAME>`: The user that will be used in authentication prompts
+- `-password <PASSWORD>`: The password required to access served data
 
 ### Examples
 
